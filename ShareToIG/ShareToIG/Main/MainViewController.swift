@@ -17,7 +17,7 @@ protocol MainDisplayLogic: class {
     func displaySomething(viewModel: Main.Something.ViewModel)
 }
 
-class MainViewController: UIViewController, MainDisplayLogic, UINavigationControllerDelegate {
+class MainViewController: UIViewController, MainDisplayLogic {
     var interactor: MainBusinessLogic?
     var router: (NSObjectProtocol & MainRoutingLogic & MainDataPassing)?
     
@@ -64,14 +64,12 @@ class MainViewController: UIViewController, MainDisplayLogic, UINavigationContro
     override func viewDidLoad() {
         super.viewDidLoad()
         doSomething()
-        self.picker.delegate = self
         setViews()
     }
     
     // MARK: Do something
     
     //@IBOutlet weak var nameTextField: UITextField!
-    let picker = UIImagePickerController()
     let imageView = UIImageView()
     let shareButton = UIButton()
     
@@ -98,6 +96,8 @@ class MainViewController: UIViewController, MainDisplayLogic, UINavigationContro
             $0.width.equalTo(250)
             $0.height.equalTo(350)
         }
+        imageView.isUserInteractionEnabled = true
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(imagePicker)))
     }
     
     private func setShareButton() {
@@ -111,8 +111,19 @@ class MainViewController: UIViewController, MainDisplayLogic, UINavigationContro
             $0.height.equalTo(50)
         }
     }
+    
+    @objc private func imagePicker() {
+        let picker = UIImagePickerController()
+        picker.delegate = self
+        picker.allowsEditing = true
+        picker.sourceType = UIImagePickerController.SourceType.photoLibrary
+        self.present(picker, animated: true, completion: nil)
+    }
 }
 
-extension MainViewController: UIImagePickerControllerDelegate {
-
+extension MainViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        imageView.image = info[.originalImage] as? UIImage
+        dismiss(animated: true, completion: nil)
+    }
 }
