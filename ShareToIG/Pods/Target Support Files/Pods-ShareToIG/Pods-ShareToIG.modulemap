@@ -1,0 +1,6 @@
+framework module Pods_ShareToIG {
+  umbrella header "Pods-ShareToIG-umbrella.h"
+
+  export *
+  module * { export * }
+}
