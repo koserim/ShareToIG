@@ -11,12 +11,13 @@
 //
 
 import UIKit
+import SnapKit
 
 protocol MainDisplayLogic: class {
     func displaySomething(viewModel: Main.Something.ViewModel)
 }
 
-class MainViewController: UIViewController, MainDisplayLogic {
+class MainViewController: UIViewController, MainDisplayLogic, UINavigationControllerDelegate {
     var interactor: MainBusinessLogic?
     var router: (NSObjectProtocol & MainRoutingLogic & MainDataPassing)?
     
@@ -63,11 +64,16 @@ class MainViewController: UIViewController, MainDisplayLogic {
     override func viewDidLoad() {
         super.viewDidLoad()
         doSomething()
+        self.picker.delegate = self
+        setViews()
     }
     
     // MARK: Do something
     
     //@IBOutlet weak var nameTextField: UITextField!
+    let picker = UIImagePickerController()
+    let imageView = UIImageView()
+    let shareButton = UIButton()
     
     func doSomething() {
         let request = Main.Something.Request()
@@ -78,4 +84,35 @@ class MainViewController: UIViewController, MainDisplayLogic {
         //nameTextField.text = viewModel.name
     }
     
+    private func setViews() {
+        setImageView()
+        setShareButton()
+    }
+    
+    private func setImageView() {
+        self.view.addSubview(imageView)
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.backgroundColor = UIColor.gray
+        imageView.snp.makeConstraints {
+            $0.center.equalToSuperview()
+            $0.width.equalTo(250)
+            $0.height.equalTo(350)
+        }
+    }
+    
+    private func setShareButton() {
+        self.view.addSubview(shareButton)
+        shareButton.translatesAutoresizingMaskIntoConstraints = false
+        shareButton.backgroundColor = UIColor.blue
+        shareButton.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.top.equalTo(imageView.snp.bottom).offset(10)
+            $0.width.equalTo(250)
+            $0.height.equalTo(50)
+        }
+    }
+}
+
+extension MainViewController: UIImagePickerControllerDelegate {
+
 }
