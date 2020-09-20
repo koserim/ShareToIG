@@ -16,7 +16,7 @@ enum Main {
     
     // MARK: Use cases
     
-    enum Something {
+    enum Share {
         struct Request { }
         struct Response { }
         struct ViewModel { }

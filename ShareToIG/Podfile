@@ -1,4 +1,4 @@
-# Uncomment the next line to define a global platform for your project
+#Uncomment the next line to define a global platform for your project
 # platform :ios, '9.0'
 
 target 'ShareToIG' do
@@ -7,7 +7,7 @@ target 'ShareToIG' do
 
   # Pods for ShareToIG
   pod 'SnapKit', '~> 5.0.0'
-
+  pod 'Then'
   target 'ShareToIGTests' do
     inherit! :search_paths
   end

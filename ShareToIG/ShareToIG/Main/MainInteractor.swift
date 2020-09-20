@@ -13,7 +13,8 @@
 import UIKit
 
 protocol MainBusinessLogic {
-    func doSomething(request: Main.Something.Request)
+    func shareToInstaStories(imageForShare: UIImage)
+    func doSomething(request: Main.Share.Request)
 }
 
 protocol MainDataStore {
@@ -27,11 +28,32 @@ class MainInteractor: MainBusinessLogic, MainDataStore {
     
     // MARK: Do something
     
-    func doSomething(request: Main.Something.Request) {
+    func doSomething(request: Main.Share.Request) {
         worker = MainWorker()
         worker?.doSomeWork()
         
-        let response = Main.Something.Response()
+        let response = Main.Share.Response()
         presenter?.presentSomething(response: response)
+    }
+    
+    func shareToInstaStories(imageForShare: UIImage) {
+        if let storiesUrl = URL(string: "instagram-stories://share") {
+            if UIApplication.shared.canOpenURL(storiesUrl) {
+                let image = imageForShare
+                guard let imageData = image.pngData() else { return  }
+                let pasteboardItems: [String:Any] = [
+                    "com.instagram.sharedSticker.stickerImage":imageData,
+                    "com.instagram.sharedSticker.backgroundTopColor":"#A9E2F3",
+                    "com.instagram.sharedSticker.backgroundBottomColo":"#2ECCFA"
+                ]
+                let pasteboardOptions = [
+                    UIPasteboard.OptionsKey.expirationDate: Date().addingTimeInterval(500)
+                ]
+                UIPasteboard.general.setItems([pasteboardItems], options: pasteboardOptions)
+                UIApplication.shared.open(storiesUrl, options: [:], completionHandler: nil)
+            } else {
+                print("User doesn't have insta app.")
+            }
+        }
     }
 }

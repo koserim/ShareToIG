@@ -12,9 +12,10 @@
 
 import UIKit
 import SnapKit
+import Then
 
 protocol MainDisplayLogic: class {
-    func displaySomething(viewModel: Main.Something.ViewModel)
+    func displaySomething(viewModel: Main.Share.ViewModel)
 }
 
 class MainViewController: UIViewController, MainDisplayLogic {
@@ -63,47 +64,42 @@ class MainViewController: UIViewController, MainDisplayLogic {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        doSomething()
-        setViews()
+        configureViews()
     }
     
     // MARK: Do something
     
-    //@IBOutlet weak var nameTextField: UITextField!
-    let imageView = UIImageView()
-    let shareButton = UIButton()
+    let imageView = UIImageView().then {
+        $0.backgroundColor = .white
+        $0.isUserInteractionEnabled = true
+        $0.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(imagePicker)))
+    }
+    lazy var shareButton = UIButton().then {
+        $0.setTitle("공유", for: .normal)
+        $0.backgroundColor = #colorLiteral(red: 0.1411764771, green: 0.3960784376, blue: 0.5647059083, alpha: 1)
+        $0.addTarget(self, action: #selector(shareButtonTapped), for: .touchUpInside)
+    }
     
-    func doSomething() {
-        let request = Main.Something.Request()
+     @objc func shareButtonTapped() {
+        interactor?.shareToInstaStories(imageForShare: imageView.image!)
+        let request = Main.Share.Request()
         interactor?.doSomething(request: request)
     }
     
-    func displaySomething(viewModel: Main.Something.ViewModel) {
+    func displaySomething(viewModel: Main.Share.ViewModel) {
         //nameTextField.text = viewModel.name
     }
     
-    private func setViews() {
-        setImageView()
-        setShareButton()
-    }
-    
-    private func setImageView() {
+    private func configureViews() {
         self.view.addSubview(imageView)
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.backgroundColor = UIColor.gray
+        self.view.addSubview(shareButton)
+        shareButton.translatesAutoresizingMaskIntoConstraints = false
         imageView.snp.makeConstraints {
             $0.center.equalToSuperview()
             $0.width.equalTo(250)
             $0.height.equalTo(350)
         }
-        imageView.isUserInteractionEnabled = true
-        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(imagePicker)))
-    }
-    
-    private func setShareButton() {
-        self.view.addSubview(shareButton)
-        shareButton.translatesAutoresizingMaskIntoConstraints = false
-        shareButton.backgroundColor = UIColor.blue
         shareButton.snp.makeConstraints {
             $0.centerX.equalToSuperview()
             $0.top.equalTo(imageView.snp.bottom).offset(10)
